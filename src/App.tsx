@@ -1,51 +1,70 @@
 import { useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { createUpdate } from "./utils/firebase/database.util";
+import { Button, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { HexFile } from "./types";
 
 function App() {
-  const [hex, setHex] = useState<string>("");
+  const [hexFile, setHexFile] = useState<HexFile | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const upload = async () => {
-    if (!hex) {
+    if (!hexFile) {
       return;
     }
 
-    createUpdate(hex);
+    setLoading(true);
+
+    await createUpdate(hexFile);
+
+    setHexFile(null);
+    setLoading(false);
   };
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-
-        <input
-          type="file"
-          onChange={(e) => {
-            const file = e?.target?.files?.[0];
-            if (!file) {
-              return;
-            }
-
-            const reader = new FileReader();
-
-            reader.readAsText(file, "UTF-8");
-
-            reader.onload = function (event) {
-              const fileContent = event?.target?.result
-                ?.toString()
-                .replaceAll("\n", "")
-                .replaceAll(" ", "")
-                .replaceAll(":", "");
-
-              if (fileContent) {
-                setHex(fileContent);
+        <Typography>{hexFile?.name}</Typography>
+        <Button variant="contained" component="label">
+          Upload File
+          <input
+            type="file"
+            hidden
+            accept=".hex"
+            onChange={(e) => {
+              const hexFile = e?.target?.files?.[0];
+              if (!hexFile) {
+                return;
               }
-            };
-          }}
-          accept=".hex"
-        />
-        <button onClick={upload}>Upload</button>
+
+              const reader = new FileReader();
+
+              reader.readAsText(hexFile, "UTF-8");
+
+              reader.onload = function (event) {
+                const fileContent = event?.target?.result
+                  ?.toString()
+                  .replaceAll("\n", "")
+                  .replaceAll(" ", "")
+                  .replaceAll(":", "");
+
+                if (fileContent) {
+                  setHexFile({ name: hexFile.name, content: fileContent });
+                }
+              };
+            }}
+          />
+        </Button>
+
+        <LoadingButton
+          variant="contained"
+          onClick={upload}
+          disabled={!hexFile}
+          loading={loading}
+        >
+          Upload
+        </LoadingButton>
       </header>
     </div>
   );
