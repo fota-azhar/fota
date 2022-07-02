@@ -2,25 +2,16 @@ import { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { createUpdate } from "./utils/firebase/database.util";
-import { uploadFile } from "./utils/firebase/storage.util";
 
 function App() {
-  const [image, setImage] = useState<File | undefined>(undefined);
+  const [hex, setHex] = useState<string>("");
 
   const upload = async () => {
-    if (!image) {
+    if (!hex) {
       return;
     }
 
-    uploadFile({
-      file: image,
-      onProgress: (progress) => {
-        console.log({ progress });
-      },
-      onComplete: async (fileUrl) => {
-        createUpdate(fileUrl);
-      },
-    });
+    createUpdate(hex);
   };
 
   return (
@@ -32,8 +23,27 @@ function App() {
           type="file"
           onChange={(e) => {
             const file = e?.target?.files?.[0];
-            setImage(file);
+            if (!file) {
+              return;
+            }
+
+            const reader = new FileReader();
+
+            reader.readAsText(file, "UTF-8");
+
+            reader.onload = function (event) {
+              const fileContent = event?.target?.result
+                ?.toString()
+                .replaceAll("\n", "")
+                .replaceAll(" ", "")
+                .replaceAll(":", "");
+
+              if (fileContent) {
+                setHex(fileContent);
+              }
+            };
           }}
+          accept=".hex"
         />
         <button onClick={upload}>Upload</button>
       </header>
