@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "fota-a9699"
-  }
+    "default": "fota-a9699",
+    "production": "fota-a9699"
+  },
+  "targets": {}
 }
