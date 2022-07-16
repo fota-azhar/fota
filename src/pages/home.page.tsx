@@ -1,79 +1,24 @@
 import { useState } from "react";
-import { Button, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
-import { HexFile } from "../types";
-import { createUpdate } from "../utils/firebase/database.util";
-import { Success } from "../components/home";
+import { Box } from "@mui/material";
+import { Success, UploadFile } from "../components/home";
 
 export function Home() {
-  const [hexFile, setHexFile] = useState<HexFile | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const upload = async () => {
-    if (!hexFile) {
-      return;
-    }
-
-    setLoading(true);
-
-    await createUpdate(hexFile);
-
-    setHexFile(null);
-    setLoading(false);
-    setShowSuccess(true);
-  };
-
   return (
-    <div className="App">
-      <header className="App-header">
-        {showSuccess ? (
-          <Success onBackClicked={() => setShowSuccess(false)} />
-        ) : (
-          <>
-            <Typography>{hexFile?.name}</Typography>
-            <Button variant="contained" component="label">
-              Upload File
-              <input
-                type="file"
-                hidden
-                accept=".hex"
-                onChange={(e) => {
-                  const hexFile = e?.target?.files?.[0];
-                  if (!hexFile) {
-                    return;
-                  }
-
-                  const reader = new FileReader();
-
-                  reader.readAsText(hexFile, "UTF-8");
-
-                  reader.onload = function (event) {
-                    const fileContent = event?.target?.result
-                      ?.toString()
-                      .replaceAll("\n", "")
-                      .replaceAll(" ", "")
-                      .replaceAll(":", "");
-
-                    if (fileContent) {
-                      setHexFile({ name: hexFile.name, content: fileContent });
-                    }
-                  };
-                }}
-              />
-            </Button>
-
-            <LoadingButton
-              variant="contained"
-              onClick={upload}
-              disabled={!hexFile}
-              loading={loading}
-            >
-              Upload
-            </LoadingButton>
-          </>
-        )}
-      </header>
-    </div>
+    <Box
+      sx={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {showSuccess ? (
+        <Success onBackClicked={() => setShowSuccess(false)} />
+      ) : (
+        <UploadFile onSuccess={() => setShowSuccess(true)} />
+      )}
+    </Box>
   );
 }
