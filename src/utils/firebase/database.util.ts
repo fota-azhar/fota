@@ -1,15 +1,13 @@
-import { getDatabase, set, ref, push } from "firebase/database";
+import { getDatabase, set, ref } from "firebase/database";
 import { firebaseApp } from ".";
 import { HexFile } from "../../types";
 
 const database = getDatabase(firebaseApp);
 
 export const createUpdate = (file: HexFile) => {
-  const updatesRef = ref(database, "updates");
+  const updateRef = ref(database, "update");
 
-  const newUpdateRef = push(updatesRef);
-
-  return set(newUpdateRef, {
+  return set(updateRef, {
     name: file.name,
     content: file.content,
   });
