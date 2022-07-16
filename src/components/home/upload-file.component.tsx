@@ -56,6 +56,7 @@ export function UploadFile({ onSuccess }: { onSuccess: () => void }) {
               const fileContent = event?.target?.result
                 ?.toString()
                 .replaceAll("\n", "")
+                .replaceAll("\r", "")
                 .replaceAll(" ", "")
                 .replaceAll(":", "");
 
