@@ -12,6 +12,5 @@ export const createUpdate = (file: HexFile) => {
   return set(newUpdateRef, {
     name: file.name,
     content: file.content,
-    someBooleanKey: false,
   });
 };
