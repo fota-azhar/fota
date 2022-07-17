@@ -5,10 +5,10 @@ import { HexFile } from "../../types";
 const database = getDatabase(firebaseApp);
 
 export const createUpdate = (file: HexFile) => {
-  const updateRef = ref(database, "test");
+  const updateRef = ref(database, "update");
 
   return set(updateRef, {
     name: file.name,
-    hex: file.content,
+    content: file.content,
   });
 };
